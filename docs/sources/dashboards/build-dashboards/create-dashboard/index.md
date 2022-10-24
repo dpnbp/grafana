@@ -83,6 +83,8 @@ You can place a panel on a dashboard in any location.
 
 1. Click the panel title and drag the panel to the new location.
 
+> **Note:** You can also group panels together within rows by dragging the panel to an existing row within a dashboard.
+
 ## Resize a panel
 
 You can size a dashboard panel to suits your needs.
@@ -90,3 +92,14 @@ You can size a dashboard panel to suits your needs.
 1. Open the dashboard.
 
 1. To adjust the size of the panel, click and drag the lower-right corner of the panel.
+
+## Move a row
+
+You can rearrange rows within a dashboard.
+
+1. Collapse a row by clicking the **Row title**.
+
+1. On the collapsed row, click the drag handle on the right side of the row to drag the row to the new location.
+
+> **Note:** Moving a row will also move any panels grouped within that row to the new location.
+
