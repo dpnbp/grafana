@@ -110,8 +110,17 @@ specify an asterix `*` to select all fields.
 
 ### Group By
 
+There is an auto group by time($__interval) statement that is preconfigured as part of the default query. This utilizes the **Min time interval** by default. To override this with a custom time interval, click on the `$__interval` and select a preset time interval from the dropdown. Alternatively, define your own time interval as a number followed by a valid time identifier.
+
 To group by a tag, click the plus icon at the end of the GROUP BY row. Pick a tag from the dropdown that appears.
 You can remove the "Group By" by clicking on the `tag` and then click on the x icon.
+
+### Timezone
+
+Optionally, use this field to provide a UTC offset by providing a parameter that follows the timezone syntax in the [Internet Assigned Numbers Authority time zone database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List). By default, timestamps will be returned in UTC.
+
+### Order By Time
+By default, the order by time clause is set to `ascending`. This will return query data in order of timestamps from lowest to highest. In order to query data in order of timestamps from highest to lowest click the dropdown and set this clause to `descending`.
 
 ### Text Editor Mode (RAW)
 
