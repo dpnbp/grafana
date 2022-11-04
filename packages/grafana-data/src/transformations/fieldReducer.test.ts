@@ -89,6 +89,15 @@ describe('Stats Calculators', () => {
     expect(stats.stdDev).toEqual(5);
   });
 
+  it('should provide minimum above zero', () => {
+    const stats = reduceField({
+      field: createField('x', [-1, 1, 2, 2, 3, 1]),
+      reducers: [ReducerID.logmin],
+    });
+
+    expect(stats.allValues).toEqual(1);
+  });
+
   it('should calculate step', () => {
     const stats = reduceField({
       field: createField('x', [100, 200, 300, 400]),
@@ -106,6 +115,15 @@ describe('Stats Calculators', () => {
     });
 
     expect(stats.uniqueValues).toEqual([1, 2, 3]);
+  });
+
+  it('should provide all values', () => {
+    const stats = reduceField({
+      field: createField('x', [1, 2, 2, 3, 1]),
+      reducers: [ReducerID.allValues],
+    });
+
+    expect(stats.allValues).toEqual([1, 2, 2, 3, 1]);
   });
 
   it('consistently check allIsNull/allIsZero', () => {
@@ -126,51 +144,38 @@ describe('Stats Calculators', () => {
   it('consistent results for first/last value with null', () => {
     const info = [
       {
-        data: [null, 200, null], // first/last value is null
-        result: 200,
+        data: [null, 200, 400, null], // first/last value is null
       },
       {
         data: [null, null, null], // All null
-        result: null,
       },
       {
         data: [undefined, undefined, undefined], // Empty row
-        result: null,
       },
     ];
 
     const stats = reduceField({
       field: createField('x', info[0].data),
+      reducers: [ReducerID.firstNotNull, ReducerID.lastNotNull, ReducerID.diffperc], // uses standard path
+    });
+    expect(stats[ReducerID.firstNotNull]).toEqual(200);
+    expect(stats[ReducerID.lastNotNull]).toEqual(400);
+    expect(stats[ReducerID.diffperc]).toEqual(1);
+
+    const stats = reduceField({
+      field: createField('x', info[1].data),
       reducers: [ReducerID.first, ReducerID.last, ReducerID.firstNotNull, ReducerID.lastNotNull, ReducerID.diffperc], // uses standard path
     });
-    expect(stats[ReducerID.first]).toEqual(null);
-    expect(stats[ReducerID.last]).toEqual(null);
-    expect(stats[ReducerID.firstNotNull]).toEqual(200);
-    expect(stats[ReducerID.lastNotNull]).toEqual(200);
-    expect(stats[ReducerID.diffperc]).toEqual(0);
+    expect(stats[ReducerID.firstNotNull]).toEqual(null);
+    expect(stats[ReducerID.lastNotNull]).toEqual(null);
+    expect(stats[ReducerID.diffperc]).toEqual(null);
 
-    const reducers = [ReducerID.lastNotNull, ReducerID.firstNotNull];
-    for (const input of info) {
-      for (const reducer of reducers) {
-        const v1 = reduceField({
-          field: createField('x', input.data),
-          reducers: [reducer, ReducerID.mean], // uses standard path
-        })[reducer];
-
-        const v2 = reduceField({
-          field: createField('x', input.data),
-          reducers: [reducer], // uses optimized path
-        })[reducer];
-
-        if (v1 !== v2 || v1 !== input.result) {
-          const msg =
-            `Invalid ${reducer} result for: ` +
-            input.data.join(', ') +
-            ` Expected: ${input.result}` + // configured
-            ` Received: Multiple: ${v1}, Single: ${v2}`;
-          expect(msg).toEqual(null);
-        }
-      }
-    }
+    const stats = reduceField({
+      field: createField('x', info[2].data),
+      reducers: [ReducerID.first, ReducerID.last, ReducerID.firstNotNull, ReducerID.lastNotNull, ReducerID.diffperc], // uses standard path
+    });
+    expect(stats[ReducerID.firstNotNull]).toEqual(null);
+    expect(stats[ReducerID.lastNotNull]).toEqual(null);
+    expect(stats[ReducerID.diffperc]).toEqual(null);
   });
 });
