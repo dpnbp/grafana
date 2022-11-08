@@ -95,7 +95,7 @@ describe('Stats Calculators', () => {
       reducers: [ReducerID.logmin],
     });
 
-    expect(stats.allValues).toEqual(1);
+    expect(stats.logmin).toEqual(1);
   });
 
   it('should calculate step', () => {
@@ -143,39 +143,21 @@ describe('Stats Calculators', () => {
 
   it('consistent results for first/last value with null', () => {
     const info = [
-      {
-        data: [null, 200, 400, null], // first/last value is null
-      },
-      {
-        data: [null, null, null], // All null
-      },
-      {
-        data: [undefined, undefined, undefined], // Empty row
-      },
+      createField('x', [null, 200, 400, null]), // first/last value is null
+      createField('x', [null, null, null]), // All null
+      createField('x', [undefined, undefined, undefined]), // Empty row
     ];
 
-    const stats = reduceField({
-      field: createField('x', info[0].data),
-      reducers: [ReducerID.firstNotNull, ReducerID.lastNotNull, ReducerID.diffperc], // uses standard path
-    });
-    expect(stats[ReducerID.firstNotNull]).toEqual(200);
-    expect(stats[ReducerID.lastNotNull]).toEqual(400);
-    expect(stats[ReducerID.diffperc]).toEqual(1);
+    expect(reduce(info[0], ReducerID.firstNotNull)).toEqual(200);
+    expect(reduce(info[0], ReducerID.lastNotNull)).toEqual(400);
+    expect(reduce(info[0], ReducerID.diffperc)).toEqual(1);
 
-    const stats = reduceField({
-      field: createField('x', info[1].data),
-      reducers: [ReducerID.first, ReducerID.last, ReducerID.firstNotNull, ReducerID.lastNotNull, ReducerID.diffperc], // uses standard path
-    });
-    expect(stats[ReducerID.firstNotNull]).toEqual(null);
-    expect(stats[ReducerID.lastNotNull]).toEqual(null);
-    expect(stats[ReducerID.diffperc]).toEqual(null);
+    expect(reduce(info[1], ReducerID.firstNotNull)).toEqual(null);
+    expect(reduce(info[1], ReducerID.lastNotNull)).toEqual(null);
+    expect(reduce(info[1], ReducerID.diffperc)).toEqual(0);
 
-    const stats = reduceField({
-      field: createField('x', info[2].data),
-      reducers: [ReducerID.first, ReducerID.last, ReducerID.firstNotNull, ReducerID.lastNotNull, ReducerID.diffperc], // uses standard path
-    });
-    expect(stats[ReducerID.firstNotNull]).toEqual(null);
-    expect(stats[ReducerID.lastNotNull]).toEqual(null);
-    expect(stats[ReducerID.diffperc]).toEqual(null);
+    expect(reduce(info[2], ReducerID.firstNotNull)).toEqual(null);
+    expect(reduce(info[2], ReducerID.lastNotNull)).toEqual(null);
+    expect(reduce(info[2], ReducerID.diffperc)).toEqual(0);
   });
 });
