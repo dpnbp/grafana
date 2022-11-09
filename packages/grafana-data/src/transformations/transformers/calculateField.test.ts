@@ -128,7 +128,7 @@ describe('calculateField transformer w/ timeseries', () => {
   });
 
   it('binary math', async () => {
-    const cfg = {
+    const cfgAdd = {
       id: DataTransformerID.calculateField,
       options: {
         mode: CalculateFieldMode.BinaryOperation,
@@ -141,7 +141,7 @@ describe('calculateField transformer w/ timeseries', () => {
       },
     };
 
-    await expect(transformDataFrame([cfg], [seriesBC])).toEmitValuesWith((received) => {
+    await expect(transformDataFrame([cfgAdd], [seriesBC])).toEmitValuesWith((received) => {
       const data = received[0];
       const filtered = data[0];
       const rows = new DataFrameView(filtered).toArray();
@@ -152,6 +152,93 @@ describe('calculateField transformer w/ timeseries', () => {
         },
         {
           'B + C': 500,
+          TheTime: 2000,
+        },
+      ]);
+    });
+
+    const cfgSubtract = {
+      id: DataTransformerID.calculateField,
+      options: {
+        mode: CalculateFieldMode.BinaryOperation,
+        binary: {
+          left: 'B',
+          operator: BinaryOperationID.Subtract,
+          right: 'C',
+        },
+        replaceFields: true,
+      },
+    };
+
+    await expect(transformDataFrame([cfgSubtract], [seriesBC])).toEmitValuesWith((received) => {
+      const data = received[0];
+      const filtered = data[0];
+      const rows = new DataFrameView(filtered).toArray();
+      expect(rows).toEqual([
+        {
+          'B - C': -1,
+          TheTime: 1000,
+        },
+        {
+          'B - C': -100,
+          TheTime: 2000,
+        },
+      ]);
+    });
+
+    const cfgMultiply = {
+      id: DataTransformerID.calculateField,
+      options: {
+        mode: CalculateFieldMode.BinaryOperation,
+        binary: {
+          left: 'B',
+          operator: BinaryOperationID.Multiply,
+          right: 'C',
+        },
+        replaceFields: true,
+      },
+    };
+
+    await expect(transformDataFrame([cfgMultiply], [seriesBC])).toEmitValuesWith((received) => {
+      const data = received[0];
+      const filtered = data[0];
+      const rows = new DataFrameView(filtered).toArray();
+      expect(rows).toEqual([
+        {
+          'B * C': 6,
+          TheTime: 1000,
+        },
+        {
+          'B * C': 60000,
+          TheTime: 2000,
+        },
+      ]);
+    });
+
+    const cfgDivide = {
+      id: DataTransformerID.calculateField,
+      options: {
+        mode: CalculateFieldMode.BinaryOperation,
+        binary: {
+          left: 'B',
+          operator: BinaryOperationID.Divide,
+          right: 'C',
+        },
+        replaceFields: true,
+      },
+    };
+
+    await expect(transformDataFrame([cfgDivide], [seriesBC])).toEmitValuesWith((received) => {
+      const data = received[0];
+      const filtered = data[0];
+      const rows = new DataFrameView(filtered).toArray();
+      expect(rows).toEqual([
+        {
+          'B / C': 2 / 3,
+          TheTime: 1000,
+        },
+        {
+          'B / C': 2 / 3,
           TheTime: 2000,
         },
       ]);
