@@ -22,3 +22,25 @@ describe('Field Type Matcher', () => {
     }
   });
 });
+
+describe('Numeric Field Matcher', () => {
+  const matcher = fieldMatchers.get(FieldMatcherID.numeric);
+  it('finds numbers', () => {
+    for (const field of simpleSeriesWithTypes.fields) {
+      const matches = matcher.get();
+      const didMatch = matches(field, simpleSeriesWithTypes, [simpleSeriesWithTypes]);
+      expect(didMatch).toBe(field.type === FieldType.number);
+    }
+  });
+});
+
+describe('Time Field Matcher', () => {
+  const matcher = fieldMatchers.get(FieldMatcherID.time);
+  it('finds times', () => {
+    for (const field of simpleSeriesWithTypes.fields) {
+      const matches = matcher.get();
+      const didMatch = matches(field, simpleSeriesWithTypes, [simpleSeriesWithTypes]);
+      expect(didMatch).toBe(field.type === FieldType.time);
+    }
+  });
+});
